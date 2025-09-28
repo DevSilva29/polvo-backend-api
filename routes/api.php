@@ -41,6 +41,10 @@ Route::get('/presidentes', [PresidenteController::class, 'index']);
 Route::get('/local-photos', [LocalPhotoController::class, 'index']);
 Route::get('/atividades', [AtividadeController::class, 'index']);
 
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+});
+
 
 // --- ROTAS PROTEGIDAS (Apenas usuários logados podem acessar) ---
 

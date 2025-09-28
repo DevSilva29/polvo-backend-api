@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'https://app.polvo.test:5173')],
+    'allowed_origins' => [env('FRONTEND_URL', 'https://cctipolvo.com.br', 'https://www.cctipolvo.com.br')],
     
     'allowed_origins_patterns' => [],
 
