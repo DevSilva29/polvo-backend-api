@@ -12,21 +12,33 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|string', // No React, o campo é 'email'
+            'email' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        // O Laravel vai procurar o 'email' na coluna 'admins_user'
-        if (Auth::attempt(['admins_user' => $credentials['email'], 'password' => $credentials['password']])) {
-            $request->session()->regenerate();
+        // --- INÍCIO DA DEPURAÇÃO ---
 
-            // Retorna os dados do utilizador logado
-            return response()->json(Auth::user());
+        // Passo 1: Tentamos encontrar o utilizador pelo 'admins_user' (que é o nosso campo de email)
+        $user = \App\Models\User::where('admins_user', $credentials['email'])->first();
+
+        // Passo 2: Verificamos se o utilizador foi encontrado
+        if (!$user) {
+            // Se não encontrámos o utilizador, o problema está aqui.
+            return response()->json(['message' => 'DEBUG: Utilizador não encontrado com este email.'], 401);
         }
 
-        return response()->json([
-            'message' => 'As credenciais fornecidas estão incorretas.'
-        ], 401);
+        // Passo 3: Verificamos se a senha corresponde à hash no banco
+        if (!\Hash::check($credentials['password'], $user->getAuthPassword())) {
+            // Se a senha não bate certo, o problema está aqui.
+            return response()->json(['message' => 'DEBUG: A senha está incorreta.'], 401);
+        }
+
+        // --- FIM DA DEPURAÇÃO ---
+
+        // Se passou nos dois testes, o login é válido
+        Auth::login($user);
+        $request->session()->regenerate();
+        return response()->json($user);
     }
 
     public function logout(Request $request)
