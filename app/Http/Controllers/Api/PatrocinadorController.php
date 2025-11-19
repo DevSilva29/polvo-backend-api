@@ -74,7 +74,7 @@ class PatrocinadorController extends Controller
 
         DB::table('patrocinadores')->where('patrocinadores_id', $id)->update($updateData);
 
-        $patrocinadorAtualizado = DB::table('patrocinadores')->find($id);
+        $patrocinadorAtualizado = DB::table('patrocinadores')->find('patrocinadores_id',$id)->first();
         return response()->json($patrocinadorAtualizado);
     }
 
