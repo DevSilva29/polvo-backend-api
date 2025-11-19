@@ -11,6 +11,9 @@ class Patrocinador extends Model
 
     protected $table = 'patrocinadores';
     protected $primaryKey = 'patrocinadores_id';
+    public $incrementing = true;
+
+    protected $keyType = 'int';
 
     public $timestamps = false;
 
