@@ -21,7 +21,7 @@ class PresidenteController extends Controller
             'presidentes_name' => 'required|string|max:255',
             'presidentes_role' => 'required|string|max:255',
             'presidentes_term' => 'required|string|max:255',
-            'presidentes_photo' => 'required|image|max:2048',
+            'presidentes_photo' => 'required|image|max:10240',
         ]);
 
         $path = $request->file('presidentes_photo')->store('presidentes', 'public_uploads');
@@ -37,7 +37,7 @@ class PresidenteController extends Controller
             'presidentes_name' => 'required|string|max:255',
             'presidentes_role' => 'required|string|max:255',
             'presidentes_term' => 'required|string|max:255',
-            'presidentes_photo' => 'nullable|image|max:2048',
+            'presidentes_photo' => 'nullable|image|max:10240',
         ]);
 
         if ($request->hasFile('presidentes_photo')) {

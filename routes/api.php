@@ -66,7 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('presidentes', PresidenteController::class)->except(['index']);
     Route::apiResource('atividades', AtividadeController::class)->except(['index']);
 
-    Route::post('/conteudo-pagina-sobre', [SobreController::class, 'update']);
+    Route::post('/sobre/update', [SobreController::class, 'update']);
     
     // CORREÇÃO AQUI: Aplicando o mesmo padrão para Documentos
     Route::apiResource('documentos', DocumentoController::class)->except(['index']);
