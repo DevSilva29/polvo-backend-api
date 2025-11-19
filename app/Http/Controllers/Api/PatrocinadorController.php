@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -11,10 +10,8 @@ class PatrocinadorController extends Controller
 {
     public function index()
     {
-        // Busca todos os patrocinadores usando o Query Builder
         $patrocinadores = DB::table('patrocinadores')->get();
 
-        // Formata os dados manualmente para garantir as URLs corretas
         $formatted = $patrocinadores->map(function ($item) {
             return [
                 'id' => $item->patrocinadores_id,
@@ -24,7 +21,7 @@ class PatrocinadorController extends Controller
             ];
         });
 
-        return response()->json(['data' => $formatted]);
+        return response()->json($formatted);
     }
 
     public function store(Request $request)
@@ -32,45 +29,24 @@ class PatrocinadorController extends Controller
         $validatedData = $request->validate([
             'patrocinadores_name' => 'required|string|max:255',
             'patrocinadores_url' => 'required|url',
-            'patrocinadores_logo' => 'required|image|max:10240', // Aumentado para 10MB
+            'patrocinadores_logo' => 'required|image|max:2048',
         ]);
 
         $path = $request->file('patrocinadores_logo')->store('patrocinadores', 'public_uploads');
 
-        try {
-            // Insere e recupera o ID gerado
-            $id = DB::table('patrocinadores')->insertGetId([
-                'patrocinadores_name' => $validatedData['patrocinadores_name'],
-                'patrocinadores_url' => $validatedData['patrocinadores_url'],
-                'patrocinadores_logo' => $path,
-                // Se a tabela tiver timestamps, descomente as linhas abaixo:
-                // 'created_at' => now(),
-                // 'updated_at' => now(),
-            ]);
+        $id = DB::table('patrocinadores')->insertGetId([
+            'patrocinadores_name' => $validatedData['patrocinadores_name'],
+            'patrocinadores_url' => $validatedData['patrocinadores_url'],
+            'patrocinadores_logo' => $path,
+        ]);
 
-            // Busca o registo recém-criado usando a chave correta
-            $novoPatrocinador = DB::table('patrocinadores')->where('patrocinadores_id', $id)->first();
+        $novoPatrocinador = DB::table('patrocinadores')->find($id);
 
-            // Formata a resposta
-            $response = [
-                'id' => $novoPatrocinador->patrocinadores_id,
-                'name' => $novoPatrocinador->patrocinadores_name,
-                'url' => $novoPatrocinador->patrocinadores_url,
-                'logo' => Storage::disk('public_uploads')->url($novoPatrocinador->patrocinadores_logo),
-            ];
-
-            return response()->json(['data' => $response], 201);
-
-        } catch (\Exception $e) {
-            // Se der erro no banco, apaga a imagem para não deixar lixo
-            Storage::disk('public_uploads')->delete($path);
-            return response()->json(['message' => 'Erro ao salvar no banco.', 'error' => $e->getMessage()], 500);
-        }
+        return response()->json($novoPatrocinador, 201);
     }
 
     public function update(Request $request, string $id)
     {
-        // Busca usando a chave correta
         $patrocinador = DB::table('patrocinadores')->where('patrocinadores_id', $id)->first();
 
         if (!$patrocinador) {
@@ -80,13 +56,12 @@ class PatrocinadorController extends Controller
         $validatedData = $request->validate([
             'patrocinadores_name' => 'required|string|max:255',
             'patrocinadores_url' => 'required|url',
-            'patrocinadores_logo' => 'nullable|image|max:10240',
+            'patrocinadores_logo' => 'nullable|image|max:2048',
         ]);
 
         $updateData = [
             'patrocinadores_name' => $validatedData['patrocinadores_name'],
             'patrocinadores_url' => $validatedData['patrocinadores_url'],
-            // 'updated_at' => now(), // Descomente se tiver timestamps
         ];
 
         if ($request->hasFile('patrocinadores_logo')) {
@@ -99,17 +74,8 @@ class PatrocinadorController extends Controller
 
         DB::table('patrocinadores')->where('patrocinadores_id', $id)->update($updateData);
 
-        // Retorna o dado atualizado
-        $patrocinadorAtualizado = DB::table('patrocinadores')->where('patrocinadores_id', $id)->first();
-        
-        $response = [
-            'id' => $patrocinadorAtualizado->patrocinadores_id,
-            'name' => $patrocinadorAtualizado->patrocinadores_name,
-            'url' => $patrocinadorAtualizado->patrocinadores_url,
-            'logo' => Storage::disk('public_uploads')->url($patrocinadorAtualizado->patrocinadores_logo),
-        ];
-
-        return response()->json(['data' => $response]);
+        $patrocinadorAtualizado = DB::table('patrocinadores')->find($id);
+        return response()->json($patrocinadorAtualizado);
     }
 
     public function destroy(string $id)
