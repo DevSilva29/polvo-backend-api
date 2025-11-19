@@ -40,7 +40,9 @@ class PatrocinadorController extends Controller
             'patrocinadores_logo' => $path,
         ], 'patrocinadores_id');
 
-        $novoPatrocinador = DB::table('patrocinadores')->find($id);
+        $novoPatrocinador = DB::table('patrocinadores')
+        ->where('patrocinadores_id', $id)
+        ->first();
 
         return response()->json($novoPatrocinador, 201);
     }
@@ -74,7 +76,9 @@ class PatrocinadorController extends Controller
 
         DB::table('patrocinadores')->where('patrocinadores_id', $id)->update($updateData);
 
-        $patrocinadorAtualizado = DB::table('patrocinadores')->find('patrocinadores_id',$id)->first();
+        $patrocinadorAtualizado = DB::table('patrocinadores')
+        ->where('patrocinadores_id',$id)
+        ->first();
         return response()->json($patrocinadorAtualizado);
     }
 
