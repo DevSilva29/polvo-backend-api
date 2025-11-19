@@ -30,7 +30,7 @@ class PatrocinadorController extends Controller
             'patrocinadores_name' => 'required|string|max:255',
             'patrocinadores_url' => 'required|url',
             'patrocinadores_logo' => 'required|image|max:2048',
-        ], 'patrocinadores_id');
+        ]);
 
         $path = $request->file('patrocinadores_logo')->store('patrocinadores', 'public_uploads');
 
@@ -38,7 +38,7 @@ class PatrocinadorController extends Controller
             'patrocinadores_name' => $validatedData['patrocinadores_name'],
             'patrocinadores_url' => $validatedData['patrocinadores_url'],
             'patrocinadores_logo' => $path,
-        ]);
+        ], 'patrocinadores_id');
 
         $novoPatrocinador = DB::table('patrocinadores')->find($id);
 
